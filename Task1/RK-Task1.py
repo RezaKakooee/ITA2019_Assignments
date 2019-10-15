@@ -1,12 +1,19 @@
-# -*- coding: utf-8 -*-
 """
 Created on Tue Oct 15 14:03:15 2019
-
 @author: Reza Kakooee, kakooee@arch.ethz.ch
 """
-# Import dependencies
+#%% # Import dependencies
+import logging 
 import numpy as np 
 import pandas as pd
+
+#%% # logging 
+# Create and configure the logging
+LOG_FORMAT = "%(message)s"
+logging.basicConfig(filename="logs.log", level=logging.DEBUG, 
+                    format=LOG_FORMAT, filemode="w")
+logger = logging.getLogger()
+
 #%% # Loading the text data contaning all points
 def load_data(text_path):
     """
@@ -55,6 +62,32 @@ def rotation_detector(first_point, second_point, third_point):
         rotation = "None"
     return rotation
 
+#%% # Plotting: set the defualt flag to 1 if you want to see the plots
+def plotting(points_list, rotation_list, flag=0):
+    """
+    inputs:
+        points_list => a list containing all points in float format
+        rotation_list => a list containing the rotation status for all datapoint
+        flag => a binary variable to enable plotting. Set to 1 if you want to see the plots
+    """
+    if flag:
+        import matplotlib.pyplot as plt
+        for points, rotation in zip(points_list, rotation_list):
+            A, B, C = points[0], points[1], points[2]
+            X = [A[0], B[0], C[0]]
+            Y = [A[1], B[1], C[1]]
+            fig, ax = plt.subplots()
+            ax.plot(X, Y)
+            ax.plot(A[0], A[1], 'o')
+            ax.annotate("A", xy=(A[0], A[1]), xytext=(A[0]+0.001, A[1]+0.001))
+            ax.annotate("B", xy=(B[0], B[1]), xytext=(B[0]+0.001, B[1]+0.001))
+            ax.annotate("C", xy=(C[0], C[1]), xytext=(C[0]+0.001, C[1]+0.001))
+            rotation_position = [np.mean([min(X), max(X)]), np.mean([min(Y), max(Y)])]
+            ax.annotate(rotation, xy=(rotation_position[0], rotation_position[1]))
+            plt.show()
+            plt.pause(1.5)
+            plt.close()
+
 #%% # Run
 if __name__ == "__main__":
     # load the text data
@@ -69,3 +102,8 @@ if __name__ == "__main__":
         # detect the rotation from A to C
         rotation = rotation_detector(A, B, C)
         rotation_list.append(rotation)
+        # save rotation status to logs
+        MESSAGE = "The rotation from [{0:9.4f} , {1:9.4f}] to [{2:9.4f} , {3:9.4f}] and then to [{4:9.4f} , {5:9.4f}] is: {6}"
+        logger.info(MESSAGE.format(A[0],A[1], B[0], B[1], C[0], C[1], rotation))
+    # plot the points and see the rotation
+    plotting(points_list, rotation_list)
