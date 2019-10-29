@@ -1,6 +1,9 @@
 """
 Created on Tue Oct 15 14:03:15 2019
-@author: Reza Kakooee, kakooee@arch.ethz.ch
+@author: Reza Kakooee, kakooee@arch.ethz.ch for ITA19
+Task1: 
+Given three points A, B, C; write a function that returns `True` if the 
+rotation from `AB` onto `AC` is counter-clockwise (ccw)
 """
 #%% # Import dependencies
 import logging 
@@ -106,4 +109,4 @@ if __name__ == "__main__":
         MESSAGE = "The rotation from [{0:9.4f} , {1:9.4f}] to [{2:9.4f} , {3:9.4f}] and then to [{4:9.4f} , {5:9.4f}] is: {6}"
         logger.info(MESSAGE.format(A[0],A[1], B[0], B[1], C[0], C[1], rotation))
     # plot the points and see the rotation
-    plotting(points_list, rotation_list)
+    plotting(points_list, rotation_list, flag=0)

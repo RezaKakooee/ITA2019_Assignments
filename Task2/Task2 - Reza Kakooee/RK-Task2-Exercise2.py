@@ -1,10 +1,20 @@
 """
 Created on Sun Oct 27 19:13:32 2019
-@author: Reza Kakooee, kakooee@arch.ethz.ch
+@author: Reza Kakooee, kakooee@arch.ethz.ch for ITA19
+Task2, Exercise1: 
+Use the cross product to compute the area of a convex, 2D polygon
 """
 #%% # Import dependencies
 import numpy as np
+import logging 
 import matplotlib.pyplot as plt
+
+#%% # logging 
+# Create and configure the logging
+LOG_FORMAT = "%(message)s"
+logging.basicConfig(filename="logs_exercise2.log", level=logging.DEBUG, 
+                    format=LOG_FORMAT, filemode="w")
+logger = logging.getLogger()
     
 # Making a random convex 2D polygon
 def get_some_2d_cordinates(num_vertices=4, radius=5):
@@ -36,7 +46,7 @@ def get_a_point_inside_polygon(vertices):
     because we assumed that the polygon is convex.
     
     inputs: vertices => the polygon vertices cordinates
-    outputs: approximated_center => (x, y) coordinats of the approximate center of the polygon
+    outputs: approximate_center => (x, y) coordinats of the approximate center of the polygon
     """
 #    # get two non-consecutive vertices
 #    x0, y0 = vertices[0]
@@ -47,21 +57,21 @@ def get_a_point_inside_polygon(vertices):
 #    yc = f(xc)
     # calculating the sudo-center of polygon _APPROXIMATELY_
     xc, yc = np.mean(vertices[:,0], axis=0), np.mean(vertices[:,1], axis=0)
-    approximated_center = (xc, yc)
-    return approximated_center
+    approximate_center = (xc, yc)
+    return approximate_center
 
-# calculating vectors from the approximated center to all vertices
-def vectors_from_center_to_vertices(approximated_center, vertices):
+# calculating vectors from the approximate center to all vertices
+def vectors_from_center_to_vertices(approximate_center, vertices):
     """ 
     We need these vectors, because the area of the polygon is the sum of the 
     ares of triagnulars constructed by the center and all vertices
     
-    inputs: approximated_center => (x,y) coordinats of the approximate center of the polygon
+    inputs: approximate_center => (x,y) coordinats of the approximate center of the polygon
             vertices => the polygon vertices cordinates
     output: internal_vectors => all vectors from the center to vertices
     
     """
-    xc, yc = approximated_center[0], approximated_center[1]
+    xc, yc = approximate_center[0], approximate_center[1]
     internal_vectors = [[x-xc, y-yc] for x,y in vertices]
     return internal_vectors
 
@@ -76,9 +86,9 @@ def cross_product(a, b):
     return a[0]*b[1]-a[1]*b[0]
 
 # plotting the polygon, and all internal vectors
-def plotting_polygon(approximated_center, num_vertices, vertices, internal_vectors):
+def plotting_polygon(approximate_center, num_vertices, vertices, internal_vectors):
     X, Y = list(vertices[:,0]), list(vertices[:,1])
-    xc, yc = approximated_center[0], approximated_center[1]
+    xc, yc = approximate_center[0], approximate_center[1]
     X.append(X[0])
     Y.append(Y[0])
     fig, ax = plt.subplots()
@@ -114,12 +124,18 @@ if __name__ == '__main__':
     num_vertices = 10
     # generate vertices for a convex polygon
     vertices = get_some_2d_cordinates(num_vertices=num_vertices)
+    MESSAGE = "\nRandom generated vertices are: \nvertices = {}"
+    logger.info(MESSAGE.format(vertices))
     # find the approximate center of the polygon
-    approximated_center = get_a_point_inside_polygon(vertices)
+    approximate_center = get_a_point_inside_polygon(vertices)
+    MESSAGE = "\nThe approximate center of the convex polygon is: \napproximate_center = [{0:2.5f}, {0:2.5f}]"
+    logger.info(MESSAGE.format(approximate_center[0], approximate_center[1]))
     # calculating the internal vectors from center to vertices
-    internal_vectors = vectors_from_center_to_vertices(approximated_center, vertices)
+    internal_vectors = vectors_from_center_to_vertices(approximate_center, vertices)
     # plotting the polygon and internal vectors
-    plotting_polygon(approximated_center, num_vertices, vertices, internal_vectors)
+    plotting_polygon(approximate_center, num_vertices, vertices, internal_vectors)
     # calculating the polygon's area
     polygon_area = calculating_polygon_area(num_vertices, internal_vectors)
+    MESSAGE = "\nThe polygon area is: \npolygon_area = {0:2.5f}"
+    logger.info(MESSAGE.format(polygon_area))
     print("The polygon area is: ", polygon_area)
